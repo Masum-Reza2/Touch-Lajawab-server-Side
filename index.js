@@ -15,7 +15,28 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
+// custom middleware for for token verification
+const verifyToken = async (req, res, next) => {
+    const token = req?.cookies?.token;
 
+    // case 1
+    if (!token) {
+        return res.status(401).send({ message: 'not authorized' })
+    }
+
+    // case 2 verifying it
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+        //  error
+        if (err) {
+            return res.status(401).send({ message: 'not authorized' })
+        }
+
+        // case 3 (proceed)
+        req.validUser = decoded;
+        next();
+    });
+
+}
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.mf3nl9y.mongodb.net/?retryWrites=true&w=majority`;
 
