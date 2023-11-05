@@ -35,7 +35,7 @@ async function run() {
         const database = client.db("touchLajawab");
         const allFoodCollection = database.collection("allFoods");
 
-        // >>>>>>JWT Auth related api<<<<<<
+        // // ***************jwt auth related API's*******************
         app.post('/jwt', async (req, res) => {
             try {
                 const jwtUser = req.body;
@@ -47,15 +47,35 @@ async function run() {
                 res
                     .cookie('token', token, {
                         httpOnly: true,
-                        secure: false, //http://localhost:5000/
-                        // sameSite: 'none', //is server and client deployed in same site?
-                        // maxAge
+                        secure: false,
+                        // sameSite: 'none', 
                     })
                     .send()
             } catch (error) {
                 console.log(error)
             }
         })
+
+        // clear the cookie after logout
+        app.post('/logout', async (req, res) => {
+            try {
+                const user = req.body;
+                console.log('logged out user', user);
+                res
+                    .clearCookie('token', {
+                        maxAge: 0,
+                        httpOnly: true,
+                        secure: false,
+                        // sameSite: 'none',
+                    })
+                    .send({ success: true })
+            } catch (error) {
+                console.log(error)
+            }
+        })
+        // ***************jwt auth related API's*******************
+
+
 
         // CRUD operation starts here
         app.post('/allFoods', async (req, res) => {
