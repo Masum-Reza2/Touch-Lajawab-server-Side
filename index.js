@@ -15,7 +15,7 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-// custom middleware for for token verification
+// custom middleware for token verification
 const verifyToken = async (req, res, next) => {
     const token = req?.cookies?.token;
 
@@ -98,14 +98,24 @@ async function run() {
 
 
 
-        // CRUD operation starts here
-        app.post('/allFoods', async (req, res) => {
+        // CRUD operation Endpoints here
+        app.post('/allFoods', verifyToken, async (req, res) => {
             try {
                 const newFoodItem = req.body;
                 const result = await allFoodCollection.insertOne(newFoodItem);
                 res.send(result);
             } catch (error) {
                 console.log(error);
+            }
+        })
+
+        // user specific food items
+        app.get('/specificFoods', verifyToken, async (req, res) => {
+            try {
+                const specificUser = req.query;
+                console.log(specificUser)
+            } catch (error) {
+                console.log(error)
             }
         })
 
