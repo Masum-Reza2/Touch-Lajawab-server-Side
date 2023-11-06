@@ -137,6 +137,60 @@ async function run() {
             }
         })
 
+        // single food
+        app.get('/allFoods/:id', async (req, res) => {
+            try {
+                const id = req.params.id;
+                const query = { _id: new ObjectId(id) };
+                const result = await allFoodCollection.findOne(query);
+                res.send(result);
+            } catch (error) {
+                console.log(error)
+            }
+        })
+
+        // delete operation
+        app.delete('/allFoods/:id', verifyToken, async (req, res) => {
+            try {
+                //  validating user
+                if (req.query?.email !== req?.user?.email) {
+                    return res.status(403).send({ message: 'forbidden access' })
+                }
+                const id = req?.params?.id;
+
+                const query = { _id: new ObjectId(id) };
+                const result = await allFoodCollection.deleteOne(query);
+                res.send(result);
+            } catch (error) {
+                console.log(error)
+            }
+        })
+
+
+        // update operation
+        app.put('/allFoods/:id', verifyToken, async (req, res) => {
+            try {
+
+                //  validating user
+                if (req.query?.email !== req?.user?.email) {
+                    return res.status(403).send({ message: 'forbidden access' })
+                }
+
+                const id = req.params.id;
+                const newFood = req.body;
+                const filter = { _id: new ObjectId(id) };
+                const updateDoc = {
+                    $set: {
+                        ...newFood
+                    },
+                };
+                const result = await allFoodCollection.updateOne(filter, updateDoc);
+                res.send(result);
+            } catch (error) {
+                console.log(error)
+            }
+        })
+
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
