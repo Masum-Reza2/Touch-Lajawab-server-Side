@@ -127,15 +127,6 @@ async function run() {
             }
         })
 
-        // all food items open route
-        app.get('/allFoods', async (req, res) => {
-            try {
-                const result = await allFoodCollection.find().toArray();
-                res.send(result)
-            } catch (error) {
-                console.log(error)
-            }
-        })
 
         // single food
         app.get('/allFoods/:id', async (req, res) => {
@@ -190,6 +181,42 @@ async function run() {
                 console.log(error)
             }
         })
+
+        // >>>>>>>>>>>>>>Paginations Endpoints<<<<<<<<<<<<<<<<<<<
+        app.get('/foodCount', async (req, res) => {
+            try {
+                const count = await allFoodCollection.estimatedDocumentCount();
+                res.send({ count }) // sending total food number in client side.
+            } catch (error) {
+                console.log(error)
+            }
+        })
+
+        // all food items as per page open route
+        app.get('/allFoods', async (req, res) => {
+            try {
+                const page = Number.parseFloat(req?.query?.page) || 0;
+                const size = Number.parseFloat(req?.query?.size) || 9;
+
+                const skip = (page - 1) * size;
+                const cursor = allFoodCollection.find();
+
+                const result = await cursor.skip(skip).limit(size).toArray();
+                res.send(result)
+            } catch (error) {
+                console.log(error)
+            }
+        })
+
+
+        // >>>>>>>>>>>>>>Paginations Endpoints<<<<<<<<<<<<<<<<<<<
+
+
+        // >>>>>>>>>>>>>>User Bookings/Orders Endpoints<<<<<<<<<<<<<<<<<<<
+
+
+
+        // >>>>>>>>>>>>>>User Bookings/Orders Endpoints<<<<<<<<<<<<<<<<<<<
 
 
         // Send a ping to confirm a successful connection
