@@ -32,7 +32,7 @@ const verifyToken = async (req, res, next) => {
         }
 
         // case 3 (proceed)
-        req.validUser = decoded;
+        req.user = decoded;
         next();
     });
 
@@ -80,8 +80,8 @@ async function run() {
         // clear the cookie after logout
         app.post('/logout', async (req, res) => {
             try {
-                const user = req.body;
-                console.log('logged out user', user);
+                // const user = req.body;
+                // console.log('logged out user', user);
                 res
                     .clearCookie('token', {
                         maxAge: 0,
@@ -99,6 +99,7 @@ async function run() {
 
 
         // CRUD operation Endpoints here
+        // create operation
         app.post('/allFoods', verifyToken, async (req, res) => {
             try {
                 const newFoodItem = req.body;
@@ -110,10 +111,27 @@ async function run() {
         })
 
         // user specific food items
-        app.get('/specificFoods', verifyToken, async (req, res) => {
+        // read operaion
+        app.get('/userSpecific', verifyToken, async (req, res) => {
             try {
-                const specificUser = req.query;
-                console.log(specificUser)
+                //  validating user
+                if (req.query?.email !== req?.user.email) {
+                    return res.status(403).send({ message: 'forbidden access' })
+                }
+
+                let query = { ownerEmail: req.query?.email };
+                const result = await allFoodCollection.find(query).toArray();
+                return res.send(result);
+            } catch (error) {
+                console.log(error)
+            }
+        })
+
+        // all food items open route
+        app.get('/allFoods', async (req, res) => {
+            try {
+                const result = await allFoodCollection.find().toArray();
+                res.send(result)
             } catch (error) {
                 console.log(error)
             }
