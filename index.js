@@ -264,6 +264,30 @@ async function run() {
             }
         })
 
+        // update operation after user place a order >>>>extra feature<<<<
+        app.put('/quantity/:id', verifyToken, async (req, res) => {
+            try {
+
+                //  validating user
+                if (req.query?.email !== req?.user?.email) {
+                    return res.status(403).send({ message: 'forbidden access' })
+                }
+
+                const id = req.params.id;
+                const newQuantity = req.body;
+
+                const filter = { _id: new ObjectId(id) };
+                const updateDoc = {
+                    $set: {
+                        quantity: newQuantity?.newQuantity
+                    },
+                };
+                const result = await allFoodCollection.updateOne(filter, updateDoc);
+                res.send(result);
+            } catch (error) {
+                console.log(error)
+            }
+        })
 
         // >>>>>>>>>>>>>>User Bookings/Orders Endpoints<<<<<<<<<<<<<<<<<<<
 
