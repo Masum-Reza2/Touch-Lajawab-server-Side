@@ -210,7 +210,6 @@ async function run() {
         // >>>>>>>>>>>>>>Paginations Endpoints<<<<<<<<<<<<<<<<<<<
 
 
-
         // >>>>>>>>>>>>>>User Bookings/Orders Endpoints<<<<<<<<<<<<<<<<<<<
         const bookingCollection = database.collection("bookings");
         app.post('/bookings', verifyToken, async (req, res) => {
@@ -264,7 +263,7 @@ async function run() {
             }
         })
 
-        // update operation after user place a order >>>>extra feature<<<<
+        // update operation for quantity after user place a order >>>>extra feature<<<<
         app.put('/quantity/:id', verifyToken, async (req, res) => {
             try {
 
@@ -288,7 +287,49 @@ async function run() {
                 console.log(error)
             }
         })
+
+        // update operation for soldCount after user place a order >>>>extra feature<<<<
+        app.put('/updateSoldCount/:id', verifyToken, async (req, res) => {
+            try {
+
+                //  validating user
+                if (req.query?.email !== req?.user?.email) {
+                    return res.status(403).send({ message: 'forbidden access' })
+                }
+
+                const id = req.params.id;
+                const newSoldCount = req.body;
+
+                const filter = { _id: new ObjectId(id) };
+                const updateDoc = {
+                    $set: {
+                        soldCount: newSoldCount?.newSoldCount
+                    },
+                };
+                const result = await allFoodCollection.updateOne(filter, updateDoc);
+                res.send(result);
+            } catch (error) {
+                console.log(error)
+            }
+        })
         // >>>>>>>>>>>>>>User Bookings/Orders Endpoints<<<<<<<<<<<<<<<<<<<
+
+
+        // >>>>>>>>>>>>>>6 top selling foods Endpoints<<<<<<<<<<<<<<<<<<<
+        app.get('/topFoods', async (req, res) => {
+            try {
+                const options = {
+                    sort: { soldCount: -1 },
+                };
+                const cursor = allFoodCollection.find({}, options).limit(6);
+                const result = await cursor.toArray();
+                res.send(result);
+            } catch (error) {
+                console.log(error);
+            }
+        });
+
+        // >>>>>>>>>>>>>>6 top selling foods Endpoints<<<<<<<<<<<<<<<<<<<
 
 
         // Send a ping to confirm a successful connection
