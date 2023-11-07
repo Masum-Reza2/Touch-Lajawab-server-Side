@@ -212,7 +212,57 @@ async function run() {
 
 
         // >>>>>>>>>>>>>>User Bookings/Orders Endpoints<<<<<<<<<<<<<<<<<<<
+        const bookingCollection = database.collection("bookings");
+        app.post('/bookings', verifyToken, async (req, res) => {
+            try {
 
+                //  validating user
+                if (req.query?.email !== req?.user?.email) {
+                    return res.status(403).send({ message: 'forbidden access' })
+                }
+
+                const bookingFoodItem = req.body;
+                const result = await bookingCollection.insertOne(bookingFoodItem);
+                res.send(result);
+            } catch (error) {
+                console.log(error)
+            }
+        })
+
+        // getting user specific booking
+        app.get('/bookings', verifyToken, async (req, res) => {
+            try {
+                //  validating user
+                if (req.query?.email !== req?.user.email) {
+                    return res.status(403).send({ message: 'forbidden access' })
+                }
+
+                let query = { buyerEmail: req.query?.email };
+                const result = await bookingCollection.find(query).toArray();
+                return res.send(result);
+            } catch (error) {
+                console.log(error)
+            }
+        })
+
+        // delete operation
+        app.delete('/bookings/:id', verifyToken, async (req, res) => {
+            try {
+
+                //  validating user
+                if (req.query?.email !== req?.user?.email) {
+                    return res.status(403).send({ message: 'forbidden access' })
+                }
+
+                const id = req?.params?.id;
+
+                const query = { _id: new ObjectId(id) };
+                const result = await bookingCollection.deleteOne(query);
+                res.send(result);
+            } catch (error) {
+                console.log(error)
+            }
+        })
 
 
         // >>>>>>>>>>>>>>User Bookings/Orders Endpoints<<<<<<<<<<<<<<<<<<<
