@@ -373,8 +373,57 @@ async function run() {
                 console.log(error);
             }
         });
-
         // >>>>>>>>>>>>>>6 top selling foods Endpoints<<<<<<<<<<<<<<<<<<<
+
+
+
+        // >>>>>>>>>>>>>>User login and registration Endpoints<<<<<<<<<<<<<<<<<<<
+        // create operation
+        const emailUserCollection = database.collection("emailUser");
+        app.post('/emailUser', async (req, res) => {
+            try {
+                const emailUser = req.body;
+                const result = await emailUserCollection.insertOne(emailUser);
+                res.send(result);
+            } catch (error) {
+                console.log(error)
+            }
+        })
+        // read operation
+        app.get('/emailUser', async (req, res) => {
+            try {
+                const cursor = emailUserCollection.find();
+                const result = await cursor.toArray();
+                res.send(result);
+            } catch (error) {
+                console.log(error)
+            }
+        })
+
+        // other credential users
+        // create operation
+        const googleOrGithubCollection = database.collection("googleOrGithubUser");
+        app.post('/googleOrGithubUser', async (req, res) => {
+            try {
+                const user = req.body;
+                const result = await googleOrGithubCollection.insertOne(user);
+                res.send(result);
+            } catch (error) {
+                console.log(error)
+            }
+        })
+        // read operation
+        app.get('/googleOrGithubUser', async (req, res) => {
+            try {
+                const cursor = googleOrGithubCollection.find();
+                const result = await cursor.toArray();
+                res.send(result);
+            } catch (error) {
+                console.log(error)
+            }
+        })
+
+        // >>>>>>>>>>>>>>User login and registration Endpoints<<<<<<<<<<<<<<<<<<<
 
 
         // Send a ping to confirm a successful connection
