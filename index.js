@@ -193,13 +193,29 @@ async function run() {
         })
 
         // all food items as per page open route
+        // most important endpoit i lean a lot operator of mongodb while working on it
         app.get('/allFoods', async (req, res) => {
             try {
+                const searchText = req?.query?.searchText;
+
                 const page = Number.parseFloat(req?.query?.page) || 0;
                 const size = Number.parseFloat(req?.query?.size) || 9;
-
                 const skip = (page - 1) * size;
-                const cursor = allFoodCollection.find();
+
+                let cursor = allFoodCollection.find();
+
+                if (searchText) {
+                    const query = {
+                        $or: [
+                            { foodName: { $regex: searchText, $options: 'i' } },
+                            { foodCategory: { $regex: searchText, $options: 'i' } },
+                            { ownerName: { $regex: searchText, $options: 'i' } }
+                        ]
+                    };
+                    cursor = allFoodCollection.find(query);
+                    const result = await cursor.skip(skip).limit(size).toArray();
+                    return res.send(result);
+                }
 
                 const result = await cursor.skip(skip).limit(size).toArray();
                 res.send(result)
@@ -207,6 +223,34 @@ async function run() {
                 console.log(error)
             }
         })
+
+        // testing endpoint >>>>>im not clearing this comment for learning purpose
+        // app.get('/searchFoodItem', async (req, res) => {
+        //     try {
+        //         const searchText = req?.query?.searchText;
+        //         console.log(searchText);
+
+        //         // For an exact match search
+        //         // const query = { foodName: searchText };
+        //         // For text-based search using a regular expression (case-insensitive)
+        //         // const query = { foodName: { $regex: searchText, $options: 'i' } };
+
+        //         const query = {
+        //             $or: [
+        //                 { foodName: { $regex: searchText, $options: 'i' } },
+        //                 { foodCategory: { $regex: searchText, $options: 'i' } },
+        //                 { ownerName: { $regex: searchText, $options: 'i' } }
+        //             ]
+        //         };
+
+        //         const cursor = allFoodCollection.find(query);
+        //         const result = await cursor.toArray();
+        //         res.send(result);
+        //     } catch (error) {
+        //         console.log(error);
+        //         res.status(500).send({ error: 'An error occurred while searching for the food item.' });
+        //     }
+        // });
         // >>>>>>>>>>>>>>Paginations Endpoints<<<<<<<<<<<<<<<<<<<
 
 
