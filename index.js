@@ -197,6 +197,7 @@ async function run() {
         app.get('/allFoods', async (req, res) => {
             try {
                 const searchText = req?.query?.searchText;
+                // console.log(searchText)
 
                 const page = Number.parseFloat(req?.query?.page) || 0;
                 const size = Number.parseFloat(req?.query?.size) || 9;
@@ -213,11 +214,11 @@ async function run() {
                         ]
                     };
                     cursor = allFoodCollection.find(query);
-                    const result = await cursor.skip(skip).limit(size).toArray();
+                    const result = await cursor.skip(skip).limit(size).toArray() || [];
                     return res.send(result);
                 }
 
-                const result = await cursor.skip(skip).limit(size).toArray();
+                const result = await cursor.skip(skip).limit(size).toArray() || [];
                 res.send(result)
             } catch (error) {
                 console.log(error)
