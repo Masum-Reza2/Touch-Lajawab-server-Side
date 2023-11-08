@@ -315,7 +315,7 @@ async function run() {
         // >>>>>>>>>>>>>>User Bookings/Orders Endpoints<<<<<<<<<<<<<<<<<<<
 
 
-        // >>>>>>>>>>>>>>6 top selling foods Endpoints<<<<<<<<<<<<<<<<<<<
+        // >>>>>>>>>>>>>>6 top selling foods Endpoint<<<<<<<<<<<<<<<<<<<
         app.get('/topFoods', async (req, res) => {
             try {
                 const options = {
