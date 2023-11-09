@@ -1,6 +1,6 @@
 const express = require('express')
-const app = express();
 const cors = require('cors');
+const app = express();
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
@@ -10,6 +10,7 @@ const port = process.env.PORT || 5000;
 // middlewares
 app.use(cors({
     origin: [
+        'http://localhost:5173',
         'https://touch-lajawab.web.app',
         'https://touch-lajawab.firebaseapp.com',
     ],
@@ -58,7 +59,7 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        // await client.connect();
+        await client.connect();
         const database = client.db("touchLajawab");
         const allFoodCollection = database.collection("allFoods");
 
@@ -74,8 +75,8 @@ async function run() {
                 res
                     .cookie('token', token, {
                         httpOnly: true,
-                        secure: true,
-                        sameSite: 'none',
+                        secure: false,
+                        // sameSite: 'none',
                     })
                     .send({ success: true })
             } catch (error) {
@@ -92,8 +93,8 @@ async function run() {
                     .clearCookie('token', {
                         maxAge: 0,
                         httpOnly: true,
-                        secure: true,
-                        sameSite: 'none',
+                        secure: false,
+                        // sameSite: 'none',
                     })
                     .send({ success: true })
             } catch (error) {
@@ -365,7 +366,6 @@ async function run() {
         })
         // >>>>>>>>>>>>>>User Bookings/Orders Endpoints<<<<<<<<<<<<<<<<<<<
 
-
         // >>>>>>>>>>>>>>6 top selling foods Endpoint<<<<<<<<<<<<<<<<<<<
         app.get('/topFoods', async (req, res) => {
             try {
@@ -433,7 +433,7 @@ async function run() {
 
 
         // Send a ping to confirm a successful connection
-        // await client.db("admin").command({ ping: 1 });
+        await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
         // Ensures that the client will close when you finish/error
