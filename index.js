@@ -10,8 +10,9 @@ const port = process.env.PORT || 5000;
 // middlewares
 app.use(cors({
     origin: [
-        'https://touch-lajawab.web.app/',
-        'https://touch-lajawab.firebaseapp.com/'],
+        'https://touch-lajawab.web.app',
+        'https://touch-lajawab.firebaseapp.com',
+    ],
     credentials: true,
 }));
 app.use(express.json());
