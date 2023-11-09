@@ -9,7 +9,9 @@ const port = process.env.PORT || 5000;
 
 // middlewares
 app.use(cors({
-    origin: ['https://touch-lajawab.web.app', 'https://touch-lajawab.firebaseapp.com'],
+    origin: [
+        'https://touch-lajawab.web.app/',
+        'https://touch-lajawab.firebaseapp.com/'],
     credentials: true,
 }));
 app.use(express.json());
@@ -71,7 +73,7 @@ async function run() {
                         secure: true,
                         sameSite: 'none',
                     })
-                    .send()
+                    .send({ success: true })
             } catch (error) {
                 console.log(error)
             }
@@ -84,10 +86,10 @@ async function run() {
                 // console.log('logged out user', user);
                 res
                     .clearCookie('token', {
+                        maxAge: 0,
                         httpOnly: true,
                         secure: true,
                         sameSite: 'none',
-                        maxAge: 0,
                     })
                     .send({ success: true })
             } catch (error) {
